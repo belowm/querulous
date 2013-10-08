@@ -93,6 +93,8 @@ extends Database {
     }
   }
 
+  def shutdown() { connectionPool.close() }
+
   def open() = poolingDataSource.getConnection()
 
   override def toString = hosts.head + "_" + name

@@ -15,7 +15,7 @@ import java.util.concurrent.Executors
 
 
 class BlockingDatabaseWrapperSpec extends Specification {
-  sequential 
+  sequential
   "BlockingDatabaseWrapper" should {
     val to = D(1,SECONDS)
     val database = new DatabaseProxy {
@@ -37,9 +37,11 @@ class BlockingDatabaseWrapperSpec extends Specification {
       def close(c: Connection) = { openConns.decrementAndGet }
 
       def reset() = { totalOpens.set(0); openConns.set(0) }
+
+      override def shutdown() = {openConns.set(0); totalOpens.set(0)}
     }
 
-    
+
 
     trait DbWrapper extends BeforeAfter {
       lazy val threads = Executors.newCachedThreadPool
@@ -51,21 +53,21 @@ class BlockingDatabaseWrapperSpec extends Specification {
       def after = threads.shutdownNow
     }
 
-    "withConnection should follow connection lifecycle" in new DbWrapper { 
+    "withConnection should follow connection lifecycle" in new DbWrapper {
       Await.result( wrapper.withConnection( _ => "DONE" ), to ) //apply()
 
       database.totalOpens.get mustEqual 1
       database.openConns.get  mustEqual 1
     }
 
-    "withConnection should return connection on exception" in new DbWrapper { 
+    "withConnection should return connection on exception" in new DbWrapper {
       Await.result( wrapper withConnection { _ => throw new Exception } recover { case _ => "Done with Exception" } , to )//apply()
 
       database.totalOpens.get mustEqual 1
       database.openConns.get  mustEqual 0
     }
 
-    "withConnection should not be interrupted if already executing" in new DbWrapper { 
+    "withConnection should not be interrupted if already executing" in new DbWrapper {
       val result = Await.result( wrapper withConnection { _ =>
         Thread.sleep(1000)
         "Done"
@@ -76,7 +78,7 @@ class BlockingDatabaseWrapperSpec extends Specification {
       database.openConns.get  mustEqual 1
     }
 
-    "withConnection should follow lifecycle regardless of cancellation" in new DbWrapper { 
+    "withConnection should follow lifecycle regardless of cancellation" in new DbWrapper {
       val hitBlock = new AtomicInteger(0)
       val futures = for (i <- 1 to 100000) yield {
         val f = wrapper.withConnection { _ =>
@@ -104,7 +106,7 @@ class BlockingDatabaseWrapperSpec extends Specification {
       true mustEqual true
     }
 
-    "withConnection should respect open timeout and max waiters" in new DbWrapper { 
+    "withConnection should respect open timeout and max waiters" in new DbWrapper {
       val futures = for (i <- 1 to 10000) yield {
         wrapper.withConnection { _ =>
           //Thread.sleep(database.openTimeout.toMillis * 2)
@@ -123,6 +125,6 @@ class BlockingDatabaseWrapperSpec extends Specification {
 
       rejected mustEqual (results.size - completed - timedout)
 
-    } 
+    }
   }
 }
