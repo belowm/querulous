@@ -6,7 +6,7 @@ object Querulous extends Build {
 
   lazy val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := "com.ticketfly",
-    version := "1.2.0-SNAPSHOT",
+    version := "1.2.0",
     scalaVersion := "2.11.1",
     crossPaths := true)
 
@@ -21,6 +21,8 @@ object Querulous extends Build {
     base = file("querulous-core"),
     settings = buildSettings ++ Seq(
       libraryDependencies ++= mysql :: dbcp :: pool :: specs2 :: mockito :: Nil,
+      credentials += Credentials(Path.userHome / ".artifactory" / ".credentials" ),
+
       publishTo := {
         if (version.value.trim.endsWith("SNAPSHOT"))
           Some("tfly-snaps" at "http://build.ticketfly.com/artifactory/libs-snapshot-local")
