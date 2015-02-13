@@ -1,7 +1,7 @@
 package com.twitter.querulous.database
 
 import java.util.logging.{Logger, Level}
-import java.util.concurrent.{TimeUnit, LinkedBlockingQueue}
+import java.util.concurrent.{Executor, TimeUnit, LinkedBlockingQueue}
 import java.sql.{SQLException, DriverManager, Connection}
 import org.apache.commons.dbcp.{PoolingDataSource, DelegatingConnection}
 import org.apache.commons.pool.{PoolableObjectFactory, ObjectPool}
@@ -47,6 +47,16 @@ class PooledConnection(c: Connection, p: ObjectPool) extends DelegatingConnectio
     invalidateConnection()
     try { c.close() } catch { case _: SQLException => }
   }
+
+  override def setSchema(schema: String) = Unit
+
+  override def getNetworkTimeout = 0
+
+  override def getSchema = null
+
+  override def setNetworkTimeout(executor: Executor, milliseconds: Int) = Unit
+
+  override def abort(executor: Executor) = Unit
 }
 
 class ThrottledPool(
