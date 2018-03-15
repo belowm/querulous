@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.twitter</groupId>
-    <artifactId>querulous-core_2.11</artifactId>
+    <artifactId>querulous-core_2.12</artifactId>
     <packaging>jar</packaging>
     <version>3.0.3</version>
 
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>2.11.1</version>
+            <version>2.12.4</version>
         </dependency>
 
         <dependency>
@@ -88,8 +88,9 @@
 
         <dependency>
             <groupId>org.specs2</groupId>
-            <artifactId>specs2_2.11</artifactId>
-            <version>2.3.13</version>
+            <artifactId>specs2_2.12</artifactId>
+            <version>2.5</version>
+	    <scope>test</scope>
         </dependency>
 
         <dependency>

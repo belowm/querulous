@@ -19,7 +19,7 @@ trait ConnectionDestroying {
           c.abortInternal()
         case c: DestroyableConnection =>
           c.destroy()
-        case c => error("Unsupported driver type, cannot reliably timeout: "+ c.getClass.getName)
+        case c => sys.error("Unsupported driver type, cannot reliably timeout: "+ c.getClass.getName)
       }
   }
 
